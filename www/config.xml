@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<app id="com.tokoku.admin" version="1.0.0" xmlns="http://api.cordova.org/ns/plugins/1.0">
+    <name>TokoKu Admin</name>
+    <description>Panel Admin Manajemen Stok TokoKu</description>
+    <author email="admin@tokoku.com">TokoKu Team</author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent system="camera" />
+    <preference name="Sapiens-Allow-Camera" value="true" />
+    <preference name="AndroidPermissions-Camera" value="true" />
+    <plugin name="cordova-plugin-camera" />
+    <plugin name="cordova-plugin-file" />
+</app>
