@@ -30,9 +30,9 @@
             --btn-toggle-bg: #000000; --btn-toggle-color: #ffffff;
         }
         body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; transition: all 0.3s ease; }
-        #sidebar { min-width: 80px; max-width: 80px; min-height: 100vh; background: var(--bg-sidebar); color: #fff; transition: all 0.3s ease; z-index: 1000; }
-        #sidebar.collapsed { margin-left: -80px; }
-        #sidebar .nav-link { color: var(--text-sidebar); padding: 20px 0; border-bottom: 1px solid var(--border-sidebar); transition: all 0.3s ease; cursor: pointer; text-align: center; font-size: 1.2rem; }
+        #sidebar { min-width: 220px; max-width: 220px; min-height: 100vh; background: var(--bg-sidebar); color: #fff; transition: all 0.3s ease; z-index: 1000; }
+        #sidebar.collapsed { margin-left: -220px; }
+        #sidebar .nav-link { color: var(--text-sidebar); padding: 12px 20px; border-bottom: 1px solid var(--border-sidebar); transition: all 0.3s ease; cursor: pointer; text-align: left; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
         #sidebar .nav-link:hover, #sidebar .nav-link.active { background: var(--bg-sidebar-hover); color: #fff; }
         .main-content { width: 100%; padding: 15px; transition: all 0.3s ease; }
         .card { box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; background-color: var(--bg-card); color: var(--text-main); transition: all 0.3s ease; }
@@ -58,12 +58,12 @@
             <i class="bi bi-shop-window fs-3 text-white"></i>
         </div>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard', this)"><i class="bi bi-speedometer2"></i></a></li>
-            <li class="nav-item"><a class="nav-link" onclick="showSection('customers', this)"><i class="bi bi-people"></i></a></li>
-            <li class="nav-item"><a class="nav-link" onclick="showSection('partners', this)"><i class="bi bi-person-badge"></i></a></li>
-            <li class="nav-item"><a class="nav-link" onclick="showSection('suppliers', this)"><i class="bi bi-truck"></i></a></li>
-            <li class="nav-item"><a class="nav-link" onclick="showSection('products', this)"><i class="bi bi-box-seam"></i></a></li>
-            <li class="nav-item"><a class="nav-link" onclick="showSection('purchases', this)"><i class="bi bi-cart-plus"></i></a></li>
+            <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard', this)"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('customers', this)"><i class="bi bi-people"></i> Pelanggan</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('partners', this)"><i class="bi bi-person-badge"></i> Mitra</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('suppliers', this)"><i class="bi bi-truck"></i> Pemasok</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('products', this)"><i class="bi bi-box-seam"></i> Stok Barang</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showSection('purchases', this)"><i class="bi bi-cart-plus"></i> Pembelian Stok</a></li>
         </ul>
         <div class="p-4 mt-auto text-center"><button class="btn btn-outline-light btn-sm w-100" onclick="toggleTheme()"><i class="bi bi-moon-stars"></i></button></div>
     </nav>

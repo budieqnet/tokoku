@@ -122,16 +122,21 @@ function setupEventListeners() {
             e.preventDefault();
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
+            
+            const products = await DB.getAll('products');
+            const product = products.find(p => p.sku && p.sku.trim().toLowerCase() === data.sku.trim().toLowerCase());
+            
+            if (!product) {
+                Swal.fire('Error', 'Produk tidak ditemukan berdasarkan SKU. Transaksi dibatalkan.', 'error');
+                return;
+            }
+            
             data.total = Number(data.qty) * Number(data.price);
             await DB.add('transactions', data);
-            const products = await DB.getAll('products');
-            const product = products.find(p => p.sku.trim().toLowerCase() === data.sku.trim().toLowerCase());
-            if (product) {
-                product.stock = Number(product.stock) + Number(data.qty);
-                await DB.put('products', product);
-            } else {
-                Swal.fire('Error', 'Produk tidak ditemukan berdasarkan SKU, stok tidak terupdate', 'error');
-            }
+            
+            product.stock = Number(product.stock) + Number(data.qty);
+            await DB.put('products', product);
+            
             Swal.fire('Berhasil', 'Pembelian dicatat dan stok terupdate', 'success');
             const modalEl = purForm.closest('.modal');
             const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -172,7 +177,8 @@ function updateStats(data) {
 }
 
 function sanitize(text) {
-    if (typeof text !== 'string') return text;
+    if (text === null || text === undefined) return '';
+    if (typeof text !== 'string') return String(text);
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -221,23 +227,22 @@ function renderTable(tableId, data) {
         'customerTable': ['name', 'phone', 'email', 'address'],
         'partnerTable': ['name', 'contact', 'address'],
         'supplierTable': ['name', 'contact', 'phone', 'email', 'address'],
-        'productTable': ['sku', 'name', 'stock', 'price'],
-        'purchaseTable': ['sku', 'qty', 'price', 'total']
+        'productTable': ['name', 'sku', 'category', 'price', 'stock', 'supplier'],
+        'purchaseTable': ['date', 'productName', 'qty', 'price', 'total', 'supplier']
     };
 
     const fields = storeMap[tableId];
 
     data.forEach(item => {
+        if (!item || item.id === undefined) return;
+
         let row = '<tr>';
         if (fields) {
             fields.forEach(field => {
                 row += `<td>${sanitize(item[field] || '')}</td>`;
             });
         } else {
-            const values = Object.values(item);
-            for (let i = 1; i < values.length; i++) {
-                row += `<td>${sanitize(values[i])}</td>`;
-            }
+            row += `<td colspan="5" class="text-center text-muted">Konfigurasi kolom tidak ditemukan untuk ${tableId}</td>`;
         }
         row += `<td>
             <button class="btn btn-sm btn-warning" onclick="editItem('${tableId}', ${item.id})"><i class="bi bi-pencil"></i></button>
@@ -321,14 +326,27 @@ const globalFunctions = {
             'products': 'Stok Barang',
             'purchases': 'Pembelian Stok'
         };
+        
+        // Use jQuery to ensure consistent DOM manipulation
         $('.section').removeClass('active');
         $(`#${id}`).addClass('active');
+        
         $('.nav-link').removeClass('active');
         $(el).addClass('active');
+        
         $('#page-title').text(titles[id] || id.charAt(0).toUpperCase() + id.slice(1));
+        
+        // Ensure sidebar collapses on mobile after selection
+        if (window.innerWidth <= 768) {
+            $('#sidebar').addClass('collapsed');
+        }
     },
     toggleSidebar: function() { $('#sidebar').toggleClass('collapsed'); },
 };
+
+// Pastikan fungsi ini terdaftar di window secara eksplisit
+window.showSection = globalFunctions.showSection;
+window.toggleSidebar = globalFunctions.toggleSidebar;
 
 globalFunctions.openModal = function(id) { 
     console.log("Attempting to open modal:", id);
@@ -339,11 +357,11 @@ globalFunctions.openModal = function(id) {
     }
     
     try {
-        const existingModal = bootstrap.Modal.getInstance(modalEl);
-        if (existingModal) {
-            existingModal.hide();
+        let modal = bootstrap.Modal.getInstance(modalEl);
+        if (!modal) {
+            modal = new bootstrap.Modal(modalEl);
         }
-        const modal = new bootstrap.Modal(modalEl);
+        
         const form = modalEl.querySelector('form');
         if (form && typeof form.reset === 'function') {
             form.reset();
@@ -426,10 +444,10 @@ async function searchProductBySKU() {
     const sku = document.getElementById('skuSearch').value;
     if (!sku) return;
     const products = await DB.getAll('products');
-    const product = products.find(p => p.sku === sku);
+    const product = products.find(p => p.sku && p.sku.trim().toLowerCase() === sku.trim().toLowerCase());
     if (product) {
         Swal.fire('Produk Ditemukan', `Nama: ${product.name}<br>Stok: ${product.stock}`, 'info');
     } else {
-        Swal.fire('Tidak Ditemukan', 'Produk dengan SKU tersebut tidak ada', 'error');
+        Swal.fire('Tidak Ditemukan', 'Produk dengan SKU tersebut tidak ada di database', 'error');
     }
 }
