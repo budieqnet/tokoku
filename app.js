@@ -68,10 +68,13 @@ let tables = {};
 async function initApp() {
     try {
         await DB.init();
+        setupResponsiveness();
+        setupClickOutside();
         setupEventListeners();
         setupScanner();
         await refreshAllData();
         applySavedTheme();
+        await populatePurchaseSuppliers();
     } catch (e) {
         console.error("App Init Error:", e);
         if (typeof Swal !== 'undefined') {
@@ -83,6 +86,37 @@ async function initApp() {
             });
         }
     }
+}
+
+async function populatePurchaseSuppliers() {
+    const suppliers = await DB.getAll('suppliers');
+    const select = document.getElementById('purchaseSupplier');
+    if (!select) return;
+
+    select.innerHTML = '<option value="" disabled selected>Pilih Pemasok...</option>';
+    suppliers.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s.name;
+        option.text = s.name;
+        select.appendChild(option);
+    });
+}
+
+
+function setupResponsiveness() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    const checkWidth = () => {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add('collapsed');
+        } else {
+            sidebar.classList.remove('collapsed');
+        }
+    };
+
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
 }
 
 function setupEventListeners() {
@@ -252,6 +286,11 @@ function renderTable(tableId, data) {
     });
     tables[tableId] = $(`#${tableId}`).DataTable({ 
         responsive: true,
+        autoWidth: false,
+        columnDefs: [
+            { responsivePriority: 1, targets: 0 }, // Kolom pertama selalu tampil
+            { responsivePriority: 2, targets: -1 } // Kolom aksi selalu tampil
+        ],
         deferRender: true,
         language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' }
     });
@@ -343,6 +382,20 @@ const globalFunctions = {
     },
     toggleSidebar: function() { $('#sidebar').toggleClass('collapsed'); },
 };
+
+function setupClickOutside() {
+    document.addEventListener('click', (e) => {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.querySelector('.toggle-btn');
+        
+        if (sidebar && !sidebar.classList.contains('collapsed')) {
+            if (!sidebar.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+                sidebar.classList.add('collapsed');
+            }
+        }
+    });
+}
+
 
 // Pastikan fungsi ini terdaftar di window secara eksplisit
 window.showSection = globalFunctions.showSection;

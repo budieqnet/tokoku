@@ -30,7 +30,7 @@
             --btn-toggle-bg: #000000; --btn-toggle-color: #ffffff;
         }
         body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; transition: all 0.3s ease; }
-        #sidebar { min-width: 220px; max-width: 220px; min-height: 100vh; background: var(--bg-sidebar); color: #fff; transition: all 0.3s ease; z-index: 1000; }
+        #sidebar { min-width: 220px; max-width: 220px; height: 100vh; background: var(--bg-sidebar); color: #fff; transition: all 0.3s ease; z-index: 1050; position: sticky; top: 0; }
         #sidebar.collapsed { margin-left: -220px; }
         #sidebar .nav-link { color: var(--text-sidebar); padding: 12px 20px; border-bottom: 1px solid var(--border-sidebar); transition: all 0.3s ease; cursor: pointer; text-align: left; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
         #sidebar .nav-link:hover, #sidebar .nav-link.active { background: var(--bg-sidebar-hover); color: #fff; }
@@ -44,11 +44,25 @@
         .modal-content { background-color: var(--bg-card); color: var(--text-main); }
         .modal-header, .modal-footer { border-color: var(--border-sidebar); }
         .btn-sm-mobile { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+        
         @media (max-width: 768px) {
-            .main-content { padding: 10px; }
-            #sidebar { min-width: 220px; max-width: 220px; }
-            #sidebar.collapsed { margin-left: -220px; }
+            body { flex-direction: column; }
+            #sidebar { 
+                position: fixed; 
+                left: 0; 
+                top: 0; 
+                bottom: 0; 
+                z-index: 1100; 
+                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            #sidebar.collapsed { transform: translateX(-100%); }
+            #sidebar:not(.collapsed) { transform: translateX(0); }
+            .main-content { padding: 10px; width: 100% !important; }
             .card { padding: 15px !important; }
+            #page-title { font-size: 1.5rem; }
+            .toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 1200; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         }
     </style>
 </head>
@@ -70,9 +84,10 @@
 
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="toggle-btn" onclick="toggleSidebar()"><i class="bi bi-list"></i></div>
             <h2 id="page-title">Dashboard</h2>
+            <div class="toggle-btn" onclick="toggleSidebar()"><i class="bi bi-list"></i></div>
         </div>
+
 
         <div id="dashboard" class="section active">
             <div class="row g-4">
@@ -227,8 +242,8 @@
                     <div class="mb-3"><label>SKU Produk</label><input type="text" name="sku" class="form-control" required></div>
                     <div class="mb-3"><label>Jumlah Beli</label><input type="number" name="qty" class="form-control" required></div>
                     <div class="mb-3"><label>Harga Beli (Satuan)</label><input type="number" name="price" class="form-control" required></div>
-                    <div class="mb-3"><label>Pemasok</label><input type="text" name="supplier" class="form-control" required></div>
-                    <div class="mb-3"><label>Tanggal Pembelian</label><input type="date" name="date" class="form-control" required></div>
+                     <div class="mb-3"><label>Pemasok</label><select name="supplier" id="purchaseSupplier" class="form-select" required></select></div>
+                     <div class="mb-3"><label>Tanggal Pembelian</label><input type="date" name="date" class="form-control" required></div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-primary">Simpan Transaksi</button></div>
             </form>
