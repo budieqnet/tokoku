@@ -298,15 +298,6 @@ npm run preview  # Preview production build
 
 ---
 
-## 📚 Dokumentasi Tambahan
-
-| File | Deskripsi |
-|------|-----------|
-| [`PROJECT_DOCUMENTATION.md`](./PROJECT_DOCUMENTATION.md) | Dokumentasi teknis lengkap (arsitektur, API, schema, frontend) |
-| [`security-audit/`](./security-audit/) | Security audit findings & remediation plan |
-
----
-
 ## 📄 License
 
 Proyek ini open-source di bawah lisensi **MIT**. Silakan gunakan, modifikasi, dan distribusikan sesuai kebutuhan.
